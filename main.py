@@ -41,7 +41,7 @@ def create_folder(con, folder, hashval):
 
 def create_database(conn):
     cursor = conn.cursor()
-    savegame_sql = "CREATE TABLE IF NOT EXISTS savegames (id TEXT PRIMARY KEY, folder TEXT NOT NULL, hashval TEXT NOT NULL)"
+    savegame_sql = "CREATE TABLE IF NOT EXISTS savegames (id TEXT, folder TEXT NOT NULL, hashval TEXT NOT NULL)"
     cursor.execute(savegame_sql)
 
 def folders(conn, folders):
@@ -49,7 +49,19 @@ def folders(conn, folders):
     cursor.execute("SELECT id, folder, hashval FROM savegames")
     print(cursor.fetchall())
 
+def check_if_folder_id_in_database(conn, folder_id):
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM savegames")
+    rows = cursor.fetchall()
+    ids = set()
 
+    for iditem in rows:
+        ids.add(iditem[0])
+
+    if folder_id not in ids:
+        return False
+    else:
+        return True
 
 with db_connect(DEFAULT_PATH) as conn:
     create_database(conn)
@@ -70,4 +82,6 @@ with db_connect(DEFAULT_PATH) as conn:
 
             line = reader.readline()
     
-    folders(conn, folders)
+    # folders(conn, folders)
+    print(check_if_folder_id_in_database(conn, '8f13b1f3a79e7de2a3eb85567957d7de'))
+    print(check_if_folder_id_in_database(conn, '9813bd984c71ac994e40f1318fef81b7'))
