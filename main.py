@@ -90,6 +90,7 @@ with db_connect(DEFAULT_PATH) as conn:
                 dir_hashvalue = dirhash(foldername)
                 
                 if check_if_folder_in_database(conn, foldername) == False:
+                    print(f'Adding folder {foldername} to database ')
                     create_folder(conn, foldername, dir_hashvalue)
                 else:
                     check_hash_diff(conn, foldername, dir_hashvalue)

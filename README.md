@@ -4,12 +4,12 @@ A tool to upload my save games to Google Drive
 
 
 ### Future improvements
-- check if the directory exists
-- if folder exists check if it is saved in the database
-- if folder exists and is in the database, calculate the sha256 and check if it the same as that in the sqlite database
-- if it has changed then upload to cloud
-- if it has not changed then leave it as it is
-- if folder does not exist then throw error
+* [x] Read dir.txt file and check if the directory exists
+* [x] If folder exists check if it is saved in the database
+* [x] If folder exists and is in the database, check if the sha1 value of the folder is the same as that in the database
+* [ ] If it has changed add folder to queue and schedule it for upload to cloud
+* [ ] If it has not changed then leave it as it is
+* [ ] If folder does not exist then throw error
 
 ### Future improvements
 These are some of the additional features i plan to reasearch and implement:
