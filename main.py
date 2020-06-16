@@ -49,19 +49,34 @@ def folders(conn, folders):
     cursor.execute("SELECT id, folder, hashval FROM savegames")
     print(cursor.fetchall())
 
-def check_if_folder_id_in_database(conn, folder_id):
+def check_if_folder_in_database(conn, foldername):
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM savegames")
+    cursor.execute("SELECT folder FROM savegames")
     rows = cursor.fetchall()
-    ids = set()
+    folders = set()
 
     for iditem in rows:
-        ids.add(iditem[0])
+        folders.add(iditem[0])
 
-    if folder_id not in ids:
+    if foldername not in folders:
         return False
     else:
         return True
+
+def check_hash_diff(conn, foldername, hashval):
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, folder FROM savegames")
+    rows = cursor.fetchall()
+    folders = [{'id' : item[0],'foldername' : item[1]} for item in rows]
+
+    for folder in folders:
+        if folder['foldername'] == foldername:
+            if folder['id'] == hashval:
+                print(f'Folder {foldername} has not changed')
+            else:
+                print(f'Folder {foldername} has changed')
+
+
 
 with db_connect(DEFAULT_PATH) as conn:
     create_database(conn)
@@ -74,14 +89,13 @@ with db_connect(DEFAULT_PATH) as conn:
             if(os.path.isdir(foldername)):
                 dir_hashvalue = dirhash(foldername)
                 
-                create_folder(conn, foldername, dir_hashvalue)
+                if check_if_folder_in_database(conn, foldername) == False:
+                    create_folder(conn, foldername, dir_hashvalue)
+                else:
+                    check_hash_diff(conn, foldername, dir_hashvalue)
 
                 # print(f'{foldername} folder exists {dir_hashvalue}')
             # else:
             #     print(f'{foldername} folder Does not exists')
 
             line = reader.readline()
-    
-    # folders(conn, folders)
-    print(check_if_folder_id_in_database(conn, '8f13b1f3a79e7de2a3eb85567957d7de'))
-    print(check_if_folder_id_in_database(conn, '9813bd984c71ac994e40f1318fef81b7'))

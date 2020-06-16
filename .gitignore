@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+
+# My Project
+file.py
+*.sqlite3
+
 # Distribution / packaging
 .Python
 build/
