@@ -10,6 +10,8 @@ __pycache__/
 # My Project
 file.py
 *.sqlite3
+.env
+*.json
 
 # Distribution / packaging
 .Python
