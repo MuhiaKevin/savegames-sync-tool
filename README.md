@@ -11,12 +11,11 @@ A tool to upload my save games to Google Drive
 * [ ] If it has not changed then leave it as it is
 * [ ] If folder does not exist then throw error
 
-### Future improvements
-These are some of the additional features i plan to reasearch and implement:
-- Use magnet links to download files
-
-- Use Distributed Hash tables instead of trackers
-- Allow for more than one downloads
-- Create a graphical interface
-- Support pausing and resuming downloads
-- Use WebRTC to create direct connection to peers
+### Resources
+https://pypi.org/project/checksumdir/1.0.5/
+https://stackoverflow.com/questions/24937495/how-can-i-calculate-a-hash-for-a-filesystem-directory-using-python
+https://www.digitalocean.com/community/tutorials/how-to-use-the-sqlite3-module-in-python-3
+https://realpython.com/read-write-files-python/
+https://www.codecademy.com/articles/what-is-sqlite
+https://codelabs.developers.google.com/codelabs/gsuite-apis-intro/#4
+https://levelup.gitconnected.com/google-drive-api-with-python-part-ii-connect-to-google-drive-and-search-for-file-7138422e0563
