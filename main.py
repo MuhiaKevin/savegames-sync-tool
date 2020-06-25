@@ -3,6 +3,7 @@ import os
 from checksumdir import dirhash
 import sqlite3
 import shutil
+import time
 
 
 FILE_PATH = './dirs.txt'
@@ -48,29 +49,21 @@ def check_if_folder_in_database(conn, foldername):
     else:
         return True
 
-def copy_to_hardisk(foldername, propername):
-    # for src_dir, dirs, files in os.walk(foldername):
-    #     dst_dir = src_dir.replace(foldername, DEST, 1)
-    #     if not os.path.exists(dst_dir):
-    #         os.makedirs(dst_dir)
-    #     for file_ in files:
-    #         src_file = os.path.join(src_dir, file_)
-    #         dst_file = os.path.join(dst_dir, file_)
-    #         if os.path.exists(dst_file):
-    #             # in case of the src and dst are the same file
-    #             if os.path.samefile(src_file, dst_file):
-    #                 continue
-    #             os.remove(dst_file)
-    #         shutil.move(src_file, dst_dir+propername)
-
+def copy_to_hardisk(conn,foldername, propername):
+    
     if os.path.exists(DEST+propername):
         shutil.rmtree(DEST+propername)
         shutil.copytree(foldername,DEST+propername)
+        update_database_item(conn,dirhash(foldername), foldername)
         print(f'Folder backup updated')
     else:
         print('folder is not backed up')
 
-def update_database_item():
+def update_database_item(conn, new_hashval, foldername):
+    sql = """UPDATE savegames  SET id = ?, hashval = ? WHERE folder = ?"""
+    cur = conn.cursor()
+    cur.execute(sql, (new_hashval,new_hashval, foldername))
+
 
 def check_hash_diff_change(conn, foldername, hashval):
     cursor = conn.cursor()
@@ -103,16 +96,23 @@ with db_connect(DEFAULT_PATH) as conn:
                 if check_if_folder_in_database(conn, foldername) == False:
                     print(f'Adding folder {foldername} to database ')
                     
-                    shutil.copytree(foldername, DEST+namme[len(namme)-1])
+                    if os.path.exists(DEST+namme[len(namme)-1]):
+                        shutil.rmtree(DEST+namme[len(namme)-1])
+                        shutil.copytree(foldername, DEST+namme[len(namme)-1])
+                    else:
+                        shutil.copytree(foldername, DEST+namme[len(namme)-1])
+
+                    
                     create_folder(conn, foldername, dir_hashvalue)
                 else:
                     if check_hash_diff_change(conn, foldername, dir_hashvalue) == True:
-                        copy_to_hardisk(foldername, namme[len(namme)-1])
+                        copy_to_hardisk(conn, foldername, namme[len(namme)-1])
                     else:
                         pass
 
-                # print(f'{foldername} folder exists {dir_hashvalue}')
-            # else:
-            #     print(f'{foldername} folder Does not exists')
+            else:
+                print(f'{foldername} folder Does not exists')
 
             line = reader.readline()
+            
+            time.sleep(1)
