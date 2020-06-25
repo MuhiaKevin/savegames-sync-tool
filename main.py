@@ -49,7 +49,7 @@ def check_if_folder_in_database(conn, foldername):
     else:
         return True
 
-def copy_to_hardisk(conn,foldername, propername):
+def create_backup(conn,foldername, propername):
     
     if os.path.exists(DEST+propername):
         shutil.rmtree(DEST+propername)
@@ -89,24 +89,35 @@ with db_connect(DEFAULT_PATH) as conn:
         line = reader.readline()
         while line != '':
             foldername = line.rstrip()
+            
+            # remove the trailing backslash
+            if foldername.endswith('/'):
+                foldername = foldername[:len(foldername) - 1]
+            
+            # get the actual foldername and not path
             namme = foldername.split('/')
+
             if(os.path.isdir(foldername)):
                 dir_hashvalue = dirhash(foldername)
                 
                 if check_if_folder_in_database(conn, foldername) == False:
                     print(f'Adding folder {foldername} to database ')
                     
+                    # removes a backup if it had exists and not tracked in the database
                     if os.path.exists(DEST+namme[len(namme)-1]):
                         shutil.rmtree(DEST+namme[len(namme)-1])
                         shutil.copytree(foldername, DEST+namme[len(namme)-1])
                     else:
+                        # copy if folder does not exists
                         shutil.copytree(foldername, DEST+namme[len(namme)-1])
-
-                    
+                    # save folder to database
                     create_folder(conn, foldername, dir_hashvalue)
+
                 else:
+                    # check if folder hash changed since the last time
                     if check_hash_diff_change(conn, foldername, dir_hashvalue) == True:
-                        copy_to_hardisk(conn, foldername, namme[len(namme)-1])
+                        # if folder changed then create backup
+                        create_backup(conn, foldername, namme[len(namme)-1])
                     else:
                         pass
 
