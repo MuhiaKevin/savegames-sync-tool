@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 from checksumdir import dirhash
 import sqlite3
@@ -9,7 +8,7 @@ import time
 FILE_PATH = './dirs.txt'
 DEFAULT_PATH = os.path.join(os.path.dirname(__file__), 'database.sqlite3')
 folders = dict()
-DEST = '/home/muhia/Documents/saves/'
+DEST = 'I:\Games\Game Fixes\save games\\'
 
 
 def db_connect(db_path=DEFAULT_PATH):
@@ -89,13 +88,12 @@ with db_connect(DEFAULT_PATH) as conn:
         line = reader.readline()
         while line != '':
             foldername = line.rstrip()
-            
             # remove the trailing backslash
-            if foldername.endswith('/'):
+            if foldername.endswith('/') or foldername.endswith('\/'):
                 foldername = foldername[:len(foldername) - 1]
             
             # get the actual foldername and not path
-            namme = foldername.split('/')
+            namme = foldername.split('\\')
 
             if(os.path.isdir(foldername)):
                 dir_hashvalue = dirhash(foldername)
@@ -105,11 +103,13 @@ with db_connect(DEFAULT_PATH) as conn:
                     
                     # removes a backup if it had exists and not tracked in the database
                     if os.path.exists(DEST+namme[len(namme)-1]):
+                        print(DEST+ '\\'+ namme[len(namme)-1])
                         shutil.rmtree(DEST+namme[len(namme)-1])
-                        shutil.copytree(foldername, DEST+namme[len(namme)-1])
+                        shutil.copytree(foldername, DEST+'\\'+ namme[len(namme)-1])
                     else:
                         # copy if folder does not exists
-                        shutil.copytree(foldername, DEST+namme[len(namme)-1])
+                        print(DEST+namme[len(namme)-1])
+                        shutil.copytree(foldername,  DEST+'\\'+ namme[len(namme)-1])
                     # save folder to database
                     create_folder(conn, foldername, dir_hashvalue)
 
